@@ -14,6 +14,8 @@ $ doxyboiler [options...] directories_or_files
 | Option | Value/Effect |
 | --------- | --------------- |
 | -r        | Descend recursively |
+| -t *dir*       | template file directory to use|
+| --copy-templates *dir*|copy default templates to *dir*|
 
 # Project Setup
 ```bash
