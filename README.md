@@ -30,6 +30,10 @@ $ pip install -r requirements.txt
 ## Python2 vs Python3
 On a related project I was having an issue using jinja2 templates with python3.   for loops in templates were not iterating as expected.   If it occurs here, I'm going to pin it down and write it up.
 
+# Examples
+
+[Before&After](docs/before_and_after.md)
+
 # References 
 
 * [CppHeaderParser](https://pypi.org/project/CppHeaderParser/)
