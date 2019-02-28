@@ -27,14 +27,15 @@ COMMENT = """/**
  */
 """
 
-METHOD_COMMENT_TEMPLATE = """"""
-
 class CommentTarget(object):
+  
+  template = None
   
   head_comment_regex = re.compile(r"^\s*/\*{2}")
   bogus_head_comment_regex = re.compile(r"^\s*/\*[^\*]")
   tail_comment_regex = re.compile(r"^\s*\*/")
   indent_regex = re.compile("\s*")
+  template_match = re.compile("(\*/)?\s*template\s*<", re.MULTILINE)
   
   def __init__(self, record, comment_template=None):
     self.line_number = record['line_number'] - 1 
@@ -45,8 +46,22 @@ class CommentTarget(object):
   def allChildren(self):
     return []
   
-  def formatComment(self):
+  def formatComment(self, tparams):
     return self.comment_template
+  
+  MultiLineStrip = re.compile(r"/\*.*\*/", re.S)
+  SingleLineStrip = re.compile("/{2,}.*")
+  TemplateParamRE = re.compile("(?:class|typename)\s+(\w+)(?:\s*=\s*(\w+))?")
+      
+  def template_parse(self, template_str):
+    """@return list of tuples t[0] param name t[1] default value or '' """
+    if not template_str:
+      return []
+    template_str = self.MultiLineStrip.sub('', template_str)
+    template_str = self.SingleLineStrip.sub('', template_str)
+    tparams = self.TemplateParamRE.findall(template_str)
+    return tparams
+  
   
   
   def test_or_remove_comment(self, lines):
@@ -59,7 +74,16 @@ class CommentTarget(object):
     bogus_remove_end = start = self.line_number - 1
 
     match = self.tail_comment_regex.match(lines[start])
-    if not match:
+    if not match: 
+      if self.record.get('template'):
+        # walk up till you find the template
+        start = self.line_number
+        while start > 0:
+          if self.template_match.search(lines[start]):
+            #start -= 1
+            break
+          start -= 1
+        return True, start
       return True, self.line_number
     
     
@@ -85,8 +109,11 @@ class CommentTarget(object):
       return
     
     indent = self.indent_regex.match(lines[atline]).group(0)
+    if indent  == "\n":
+      indent = ''
+    tparams = self.template_parse(self.record.get('template', False))
     
-    comment = self.formatComment().strip().split("\n")
+    comment = self.formatComment(tparams).strip().split("\n")
     for idx, l in enumerate(comment):
       comment[idx] = indent + l + "\n"
 
@@ -95,12 +122,10 @@ class CommentTarget(object):
   def __repr__(self):
     return "{0}:{1}".format(self.record['name'], self.line_number)
   
-
-def template_parse(template):
-  return
-  
-
 class ClassEntry(CommentTarget):
+  
+  template = None
+  
   def __init__(self, classRec, access=['public', 'protected', 'private']):
     CommentTarget.__init__(self, classRec)
     self.classRec = classRec 
@@ -126,9 +151,9 @@ class FunctionEntry(CommentTarget):
     self.methodRec = methodRec
     
     
-  def formatComment(self):
+  def formatComment(self, tparams):
     
-    comment = self.template.render(record=self.record)
+    comment = self.template.render(record=self.record, tparams=tparams)
     
     return comment
 
@@ -142,8 +167,7 @@ class ClassMethodFile(object):
   def __init__(self, filename, targets):
     self.filename = filename
     self.targets = targets
-
-
+  
 def main():
   import argparse
   
@@ -154,6 +178,7 @@ def main():
   jenv = j2.Environment(loader=j2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
   
   FunctionEntry.template = jenv.get_template('method.template')
+  ClassEntry.template = jenv.get_template('class.template')
   
   shutil.copy(sys.argv[1], path)
   

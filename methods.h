@@ -32,7 +32,9 @@ public:
  */
 class c {
 public:
-  template<typename T>
+
+template<class X, class T = string/* comment */, 
+	 typename TY = int>
   void method_a1(const std:string& arg1, const T&) ;
   /*
    * previous(but bogus)
@@ -50,7 +52,8 @@ public:
 
 void function_a(int a, int b) ;
 
-template<class T = string/* comment */, typename TY = int>
+template<class X, class T = string/* comment */, 
+	 typename TY = int>
 class template1 {
 public:
   void T makenew(int X, long *ptr) ;

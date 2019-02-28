@@ -3,6 +3,7 @@
 /** 
  * @brief UNDOCUMENTED
  *
-{%for param in record['parameters']%} * @param {{param['name']}}
+{%for tparam in tparams%} * @tparam {{tparam[0]}}{%if tparam[1]%} default {{tparam[1]}}{%endif%}
+{%endfor%}{%for param in record['parameters']%} * @param {{param['name']}}
 {%endfor%}{%if record['returns'] != 'void'%} * @return {{record['returns']}}
 {%endif%} */

@@ -2,3 +2,4 @@
 /doxyboiler.wpu
 /test_*
 
+__pycache__
