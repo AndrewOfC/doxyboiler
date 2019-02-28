@@ -3,3 +3,5 @@
 /test_*
 
 __pycache__
+\#*
+/tmpd

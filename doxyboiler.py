@@ -1,4 +1,4 @@
-#! /usr/bin/env python2.7
+#! /usr/bin/env python3
 
 from __future__ import print_function
 
@@ -42,12 +42,19 @@ class CommentTarget(object):
     self.record = record
     self.comment_template = comment_template or COMMENT
     
+  def _getName(self):
+    return self.record.get('name', "UNKNOWN")
+  
+  name = property(_getName)
     
   def allChildren(self):
     return []
   
   def formatComment(self, tparams):
-    return self.comment_template
+    
+    comment = self.template.render(record=self.record, tparams=tparams)
+    
+    return comment
   
   MultiLineStrip = re.compile(r"/\*.*\*/", re.S)
   SingleLineStrip = re.compile("/{2,}.*")
@@ -70,6 +77,8 @@ class CommentTarget(object):
     """
     if( self.line_number == 0 ):
       return (False, 0) # do nothing
+    if 'doxygen' in self.record:
+      return (False, 0)
     
     bogus_remove_end = start = self.line_number - 1
 
@@ -106,18 +115,22 @@ class CommentTarget(object):
       
     (doit, atline) = self.test_or_remove_comment(lines)
     if not doit:
-      return
+      return False
     
     indent = self.indent_regex.match(lines[atline]).group(0)
     if indent  == "\n":
       indent = ''
     tparams = self.template_parse(self.record.get('template', False))
     
-    comment = self.formatComment(tparams).strip().split("\n")
+    raw_comment = self.formatComment(tparams).strip() + "\n" + lines[atline].strip()
+    
+    comment = raw_comment.split("\n")
     for idx, l in enumerate(comment):
       comment[idx] = indent + l + "\n"
 
     lines[atline:atline] = comment
+    
+    return raw_comment
       
   def __repr__(self):
     return "{0}:{1}".format(self.record['name'], self.line_number)
@@ -149,14 +162,6 @@ class FunctionEntry(CommentTarget):
   def __init__(self, methodRec):
     CommentTarget.__init__(self, methodRec)
     self.methodRec = methodRec
-    
-    
-  def formatComment(self, tparams):
-    
-    comment = self.template.render(record=self.record, tparams=tparams)
-    
-    return comment
-
 
 class MethodEntry(FunctionEntry):
   def __init__(self, methodRec):
@@ -168,49 +173,93 @@ class ClassMethodFile(object):
     self.filename = filename
     self.targets = targets
   
+def lmap(f, it):
+  return list(map(f, it))
+
+  
+def find_template_dir():
+  return os.path.join(os.path.dirname(__file__), 'templates')
+
+def copy_templates(dest):
+  """copy our current templates to dest"""
+  
+  shutil.copytree(find_template_dir(), dest)
+  
+  sys.exit(0)
+
 def main():
   import argparse
   
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(description="")
   
-  path = "test_{0}".format(sys.argv[1])
+  parser.add_argument("-v", "--verbose", action='count')
+  parser.add_argument("--test", action='store_true', help="copy each file to test_filename and process that instead")
+  parser.add_argument("--copy-templates", type=str, help="copy out exiting templates to destination for customization")
+  parser.add_argument("--templates", type=str, help="alternate templates, run --copy-templates, customize then use this option")
+  parser.add_argument('paths', nargs='*')
   
-  jenv = j2.Environment(loader=j2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')))
+  args = parser.parse_args()
+  
+  if args.copy_templates:
+    copy_templates(args.copy_templates)
+    return
+  
+  if not args.test :
+    paths = args.paths
+  else: 
+    paths = lmap((lambda p: "{0}/test_{1}".format(os.path.dirname(p) or '.', os.path.basename(p))), args.paths)
+    for src, dst in zip(args.paths, paths):
+      shutil.copy(src, dst)
+      
+  template_dir = args.templates or find_template_dir()
+  
+  jenv = j2.Environment(loader=j2.FileSystemLoader(template_dir))
   
   FunctionEntry.template = jenv.get_template('method.template')
   ClassEntry.template = jenv.get_template('class.template')
   
-  shutil.copy(sys.argv[1], path)
-  
-  cpph = CppHeaderParser.CppHeader(path)
-  
-  targets = []
-  for key, classRec in cpph.classes.items():
-    targets.append(ClassEntry(classRec))
+  applied_count = 0
+  for path in paths:
     
-  for methodRec in cpph.functions:
-    targets.append(FunctionEntry(methodRec))
+    cpph = CppHeaderParser.CppHeader(path)
     
-  # flatten
-  
-  flattened = [] 
-  for target in targets:
-    flattened.append(target)
-    flattened.extend(target.allChildren())
+    targets = []
+    for key, classRec in cpph.classes.items():
+      targets.append(ClassEntry(classRec))
+      
+    for methodRec in cpph.functions:
+      targets.append(FunctionEntry(methodRec))
+      
+    # flatten
     
-  flattened = sorted(flattened, key=(lambda a: a.line_number), reverse=True)
-  
-  # insert
-  
-  lines = FileToLines(path)
-  
-  for target in flattened:
-    isinstance(target, CommentTarget)
-    target.applyToLines(lines)
-  
-  
-  LinesToFile(lines, path)
-  
+    flattened = [] 
+    for target in targets:
+      flattened.append(target)
+      flattened.extend(target.allChildren())
+      
+    flattened = sorted(flattened, key=(lambda a: a.line_number), reverse=True)
+    
+    # insert
+    
+    lines = FileToLines(path)
+    
+    for target in flattened:
+      isinstance(target, CommentTarget)
+      applied = target.applyToLines(lines)
+      if applied:
+        applied_count += 1
+        if args.verbose >= 3:
+          print(applied)
+        if args.verbose >= 2:
+          print("{0}:{1} applied to {2}".format(path, target.line_number+1, target.name))
+        if args.verbose >= 3:
+          print() # for readability
+          
+    
+    
+    LinesToFile(lines, path)
+  if args.verbose >= 1:
+    print("{0} comments applied".format(applied_count))
   
   return 
 

@@ -14,6 +14,6 @@ proj.file-list = [loc('doxyboiler.py'),
                   loc('doxyboiler_utils.py')]
 proj.file-type = 'shared'
 proj.launch-config = {loc('doxyboiler.py'): ('project',
-        (u'methods.h',
+        (u'--test methods.h -v --verbose',
          ''))}
 proj.main-file = loc('doxyboiler.py')

@@ -1,7 +1,7 @@
 
 
 /** 
- * @brief UNDOCUMENTED
+ * @brief {{record['name']}} 
  *
-{%for param in tparams%} * @tparam {{param}}
+{%for tparam in tparams%} * @tparam {{tparam[0]}}{%if tparam[1]%} default {{tparam[1]}}{%endif%}
 {%endfor%} */

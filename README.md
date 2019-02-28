@@ -1,6 +1,8 @@
 [[_TOC_]]
 # Overview
-Python script to add 'boilerplate' [Doxygen](http://www.doxygen.nl/) comments to header files [en masse](https://en.wiktionary.org/wiki/en_masse) using the [CppHeaderParser](https://pypi.org/project/CppHeaderParser/)
+Python script to add 'boilerplate' [Doxygen](http://www.doxygen.nl/) comments to header files [en masse](https://en.wiktionary.org/wiki/en_masse) using the [CppHeaderParser](https://pypi.org/project/CppHeaderParser/).  
+
+Comments are formatted using [jinja2](http://jinja.pocoo.org/) templates.
 
 # Goal 
 Produce a pypi package installable via pip/virtualenv
@@ -9,13 +11,13 @@ Produce a pypi package installable via pip/virtualenv
 
 
 ```bash
-$ doxyboiler [options...] directories_or_files
+$ doxyboiler.py [options...] files
 ```
-| Option | Value/Effect |
-| --------- | --------------- |
-| -r        | Descend recursively |
-| -t *dir*       | template file directory to use|
-| --copy-templates *dir*|copy default templates to *dir*|
+| Option         | Value/Effect |
+| --------------- | --------------- |
+| -v|increase verbosity.<br><br>Once, count of insertertions.<br>Twice, each insertion listed<br>Three, text of comments applied|
+| --templates *dir*       | template file directory to use|
+| --copy-templates *dir*|copy default templates to *dir*<br><br>Templates may then be customized and used with the --templates option|
 
 # Project Setup
 ```bash
@@ -27,9 +29,6 @@ $ pip install -r requirements.txt
 ```
 
 # Notes
-## Python2 vs Python3
-On a related project I was having an issue using jinja2 templates with python3.   for loops in templates were not iterating as expected.   If it occurs here, I'm going to pin it down and write it up.
-
 # Examples
 
 [Before&After](docs/before_and_after.md)
@@ -38,3 +37,4 @@ On a related project I was having an issue using jinja2 templates with python3. 
 
 * [CppHeaderParser](https://pypi.org/project/CppHeaderParser/)
 * [Doxygen](http://www.doxygen.nl/)
+* [Jinja2](http://jinja.pocoo.org/)

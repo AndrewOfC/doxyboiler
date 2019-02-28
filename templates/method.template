@@ -1,9 +1,10 @@
 
 
 /** 
- * @brief UNDOCUMENTED
+ * @brief {{record['name']}} {%if record.get('destructor')%}destructor {%endif%} {%if record.get('constructor')%}constructor {%endif%}
  *
 {%for tparam in tparams%} * @tparam {{tparam[0]}}{%if tparam[1]%} default {{tparam[1]}}{%endif%}
-{%endfor%}{%for param in record['parameters']%} * @param {{param['name']}}
-{%endfor%}{%if record['returns'] != 'void'%} * @return {{record['returns']}}
+{%endfor%}{%if tparams%} *
+{%endif%}{%for param in record['parameters']%} * @param {{param['name']}}
+{%endfor%}{%if record.get('returns') and record['returns'] != 'void'%} * @return {{record['returns']}}
 {%endif%} */

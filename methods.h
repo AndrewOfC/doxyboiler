@@ -18,7 +18,7 @@ public:
 } ;
 
 
-class b {
+class beta {
 public:
   void method_a1(const std:string& arg1) ;
   void method_a2(const std::string& arg1, int arg2, int arg3, bool flag) ;
@@ -30,9 +30,11 @@ public:
 /**
  *
  */
-class c {
+class cat {
 public:
 
+  virtual ~cat() ;
+  cat(int x) ;
 template<class X, class T = string/* comment */, 
 	 typename TY = int>
   void method_a1(const std:string& arg1, const T&) ;
@@ -47,7 +49,10 @@ template<class X, class T = string/* comment */,
    * previous but not bogus
    */
   void method_a3(int xyz) ;
-  
+
+  /** @private */
+  void method_aa3() ;
+
 } ;
 
 void function_a(int a, int b) ;
