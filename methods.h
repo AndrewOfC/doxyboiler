@@ -32,7 +32,8 @@ public:
  */
 class c {
 public:
-  void method_a1(const std:string& arg1) ;
+  template<typename T>
+  void method_a1(const std:string& arg1, const T&) ;
   /*
    * previous(but bogus)
    */
@@ -41,11 +42,16 @@ public:
   // yah
 
   /** 
-   * previous but not boguss
+   * previous but not bogus
    */
   void method_a3(int xyz) ;
   
 } ;
 
-// void function_a(int a, int b) ;
+void function_a(int a, int b) ;
 
+template<class T = string/* comment */, typename TY = int>
+class template1 {
+public:
+  void T makenew(int X, long *ptr) ;
+} ;

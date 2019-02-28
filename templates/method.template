@@ -1,0 +1,8 @@
+
+
+/** 
+ * @brief UNDOCUMENTED
+ *
+{%for param in record['parameters']%} * @param {{param['name']}}
+{%endfor%}{%if record['returns'] != 'void'%} * @return {{record['returns']}}
+{%endif%} */
