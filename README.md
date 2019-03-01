@@ -1,4 +1,4 @@
-[[_TOC_]]
+
 # Overview
 Python script to add 'boilerplate' [Doxygen](http://www.doxygen.nl/) comments to header files [en masse](https://en.wiktionary.org/wiki/en_masse) using the [CppHeaderParser](https://pypi.org/project/CppHeaderParser/).  
 
@@ -15,7 +15,7 @@ $ doxyboiler.py [options...] files
 ```
 | Option         | Value/Effect |
 | --------------- | --------------- |
-| -v|increase verbosity.<br><br>Once, count of insertertions.<br>Twice, each insertion listed<br>Three, text of comments applied|
+| -v|increase verbosity.<br><br>Once, count of insertions<br>Twice, each insertion listed<br>Three, text of comments applied|
 | --templates *dir*       | template file directory to use|
 | --copy-templates *dir*|copy default templates to *dir*<br><br>Templates may then be customized and used with the --templates option|
 
