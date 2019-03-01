@@ -1,0 +1,19 @@
+#!wing
+#!version=6.0
+##################################################################
+# Wing IDE project file                                          #
+##################################################################
+[project attributes]
+proj.directory-list = [{'dirloc': loc('templates'),
+                        'excludes': (),
+                        'filter': u'*',
+                        'include_hidden': False,
+                        'recursive': True,
+                        'watch_for_changes': True}]
+proj.file-list = [loc('doxyboiler.py'),
+                  loc('doxyboiler_utils.py')]
+proj.file-type = 'shared'
+proj.launch-config = {loc('doxyboiler.py'): ('project',
+        (u'--test methods.h -v --verbose',
+         ''))}
+proj.main-file = loc('doxyboiler.py')

@@ -1,0 +1,7 @@
+
+
+/** 
+ * @brief {{record['name']}} 
+ *
+{%for tparam in tparams%} * @tparam {{tparam[0]}}{%if tparam[1]%} default {{tparam[1]}}{%endif%}
+{%endfor%} */

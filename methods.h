@@ -7,17 +7,21 @@
  */
 class a {
 public:
-  /**
-   *
-   */
-  void method_a1(const std:string& arg1) ;
-  /**
-   *
-   */
+  long method_a1(const std:string& arg1) ;
+
   void method_a2(const std::string& arg1, int arg2, int arg3, bool flag) ;
-  /**
-   *
-   */
+
+  void method_a3(int xyz) ;
+
+  void method_a4() ;
+  
+} ;
+
+
+class beta {
+public:
+  void method_a1(const std:string& arg1) ;
+  void method_a2(const std::string& arg1, int arg2, int arg3, bool flag) ;
   void method_a3(int xyz) ;
   
 } ;
@@ -26,43 +30,36 @@ public:
 /**
  *
  */
-class b {
+class cat {
 public:
-  /**
-   *
-   */
-  void method_a1(const std:string& arg1) ;
-  /**
-   *
-   */
-  void method_a2(const std::string& arg1, int arg2, int arg3, bool flag) ;
-  /**
-   *
-   */
-  void method_a3(int xyz) ;
-  
-} ;
 
-
-/**
- *
- */
-class c {
-public:
-  /**
-   *
-   */
-  void method_a1(const std:string& arg1) ;
-  /**
+  virtual ~cat() ;
+  cat(int x) ;
+template<class X, class T = string/* comment */, 
+	 typename TY = int>
+  void method_a1(const std:string& arg1, const T&) ;
+  /*
    * previous(but bogus)
    */
-  void method_a2(const std::string& arg1, int arg2, int arg3, bool flag) ;
-  /**
-   *
+  int method_a2(const std::string& arg1, int arg2, int arg3, bool flag) ;
+
+  // yah
+
+  /** 
+   * previous but not bogus
    */
   void method_a3(int xyz) ;
-  
+
+  /** @private */
+  void method_aa3() ;
+
 } ;
 
-// void function_a(int a, int b) ;
+void function_a(int a, int b) ;
 
+template<class X, class T = string/* comment */, 
+	 typename TY = int>
+class template1 {
+public:
+  void T makenew(int X, long *ptr) ;
+} ;

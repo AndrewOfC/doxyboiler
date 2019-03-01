@@ -1,1 +1,7 @@
 /env
+/doxyboiler.wpu
+/test_*
+
+__pycache__
+\#*
+/tmpd
