@@ -122,7 +122,7 @@ class CommentTarget(object):
       indent = ''
     tparams = self.template_parse(self.record.get('template', False))
     
-    raw_comment = self.formatComment(tparams).strip() + "\n" + lines[atline].strip()
+    raw_comment = self.formatComment(tparams).strip()
     
     comment = raw_comment.split("\n")
     for idx, l in enumerate(comment):
@@ -192,7 +192,7 @@ def main():
   
   parser = argparse.ArgumentParser(description="")
   
-  parser.add_argument("-v", "--verbose", action='count')
+  parser.add_argument("-v", "--verbose", action='count', default=0)
   parser.add_argument("--test", action='store_true', help="copy each file to test_filename and process that instead")
   parser.add_argument("--copy-templates", type=str, help="copy out exiting templates to destination for customization")
   parser.add_argument("--templates", type=str, help="alternate templates, run --copy-templates, customize then use this option")
