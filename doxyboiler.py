@@ -186,6 +186,12 @@ def copy_templates(dest):
   shutil.copytree(find_template_dir(), dest)
   
   sys.exit(0)
+  
+def loadFileList(path):
+  f = open(path)
+  
+  return map(str.strip, f)
+  
 
 def main():
   import argparse
@@ -193,9 +199,11 @@ def main():
   parser = argparse.ArgumentParser(description="")
   
   parser.add_argument("-v", "--verbose", action='count', default=0)
+  parser.add_argument("-r", "--report", action='store_true', help="produce report on missing docs")
   parser.add_argument("--test", action='store_true', help="copy each file to test_filename and process that instead")
   parser.add_argument("--copy-templates", type=str, help="copy out exiting templates to destination for customization")
   parser.add_argument("--templates", type=str, help="alternate templates, run --copy-templates, customize then use this option")
+  parser.add_argument("-f", "--files", nargs=1, help="file containing list of files to process")
   parser.add_argument('paths', nargs='*')
   
   args = parser.parse_args()
@@ -204,7 +212,9 @@ def main():
     copy_templates(args.copy_templates)
     return
   
-  if not args.test :
+  if args.files:
+    paths=loadFileList(args.files[0])  
+  elif not args.test :
     paths = args.paths
   else: 
     paths = lmap((lambda p: "{0}/test_{1}".format(os.path.dirname(p) or '.', os.path.basename(p))), args.paths)
@@ -251,7 +261,7 @@ def main():
         if args.verbose >= 3:
           print(applied)
         if args.verbose >= 2:
-          print("{0}:{1} applied to {2}".format(path, target.line_number+1, target.name))
+          print(f"{path}: comment applied to {target.name}:\n{path}:{target.line_number+1}: warning: empty comment")
         if args.verbose >= 3:
           print() # for readability
           

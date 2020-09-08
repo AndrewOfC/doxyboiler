@@ -5,6 +5,6 @@
  *
 {%for tparam in tparams%} * @tparam {{tparam[0]}}{%if tparam[1]%} default {{tparam[1]}}{%endif%}
 {%endfor%}{%if tparams%} *
-{%endif%}{%for param in record['parameters']%} * @param {{param['name']}}
+{%endif%}{%for param in record['parameters']%} * @param {%if not param['name'] or param['name'] == '&'%}{{param['type']}}{%else%}{{param['name']}}{%endif%}
 {%endfor%}{%if record.get('returns') and record['returns'] != 'void'%} * @return {{record['returns']}}
 {%endif%} */
